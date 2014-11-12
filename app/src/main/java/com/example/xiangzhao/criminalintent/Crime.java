@@ -11,10 +11,21 @@ public class Crime {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
+    private String mSuspect;
 
     public Crime() {
+
         mId = UUID.randomUUID();
         mDate = new Date();
+        mSuspect = "test1";
+    }
+
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
     }
 
     public String getTitle() {
