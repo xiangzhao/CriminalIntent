@@ -40,6 +40,7 @@ public class CrimePagerActivity extends ActionBarActivity {
             }
         });
 
+
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
