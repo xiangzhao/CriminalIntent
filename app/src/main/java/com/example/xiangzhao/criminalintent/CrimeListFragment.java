@@ -1,6 +1,6 @@
 package com.example.xiangzhao.criminalintent;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
@@ -21,6 +21,19 @@ public class CrimeListFragment extends ListFragment {
     private static final String TAG = "CrimeListFragment";
     private ArrayList<Crime> mCrimes;
     private boolean mSubTitleVisible;
+    private Callbacks mCallbacks;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,15 +63,17 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Crime c = ((CrimeAdapter) getListAdapter()).getItem(position);
-        Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
-        startActivity(i);
+        ((Callbacks) getActivity()).onCrimeSelected(c);
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        updateUI();
+    }
+
+    public void updateUI() {
         ((CrimeAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
@@ -79,9 +94,7 @@ public class CrimeListFragment extends ListFragment {
             case R.id.menu_item_new_crime:
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent i = new Intent(getActivity(), CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-                startActivityForResult(i, 0);
+                ((Callbacks) getActivity()).onCrimeSelected(crime);
                 return true;
             case R.id.menu_item_show_subtitle:
                 if (((ActionBarActivity) getActivity()).getSupportActionBar().getSubtitle() == null) {
@@ -97,6 +110,10 @@ public class CrimeListFragment extends ListFragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
     }
 
     private class CrimeAdapter extends ArrayAdapter<Crime> {

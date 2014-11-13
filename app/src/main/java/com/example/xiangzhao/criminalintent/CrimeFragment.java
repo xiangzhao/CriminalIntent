@@ -37,6 +37,7 @@ public class CrimeFragment extends Fragment {
     private EditText mTitleField;
     private Button mDateButton;
     private CheckBox mSolvedCheckBox;
+    private Callbacks mCallbacks;
 
     public static CrimeFragment newInstance(UUID id) {
         Bundle args = new Bundle();
@@ -44,6 +45,18 @@ public class CrimeFragment extends Fragment {
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     @Override
@@ -72,6 +85,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
+                mCallbacks.onCrimeUpdated(mCrime);
             }
 
             @Override
@@ -98,6 +112,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                mCallbacks.onCrimeUpdated(mCrime);
             }
         });
 
@@ -148,6 +163,7 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
+            mCallbacks.onCrimeUpdated(mCrime);
             updateDate();
         } else if (requestCode == REQUEST_CONTACT) {
             Uri contactUri = data.getData();
@@ -166,6 +182,7 @@ public class CrimeFragment extends Fragment {
             c.moveToFirst();
             String suspect = c.getString(0);
             mCrime.setSuspect(suspect);
+            mCallbacks.onCrimeUpdated(mCrime);
             mSuspectButton.setText(suspect);
             c.close();
 
@@ -194,5 +211,9 @@ public class CrimeFragment extends Fragment {
         String report = getString(R.string.crime_report,
                 mCrime.getTitle(), dateString, solvedString, suspect);
         return report;
+    }
+
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
     }
 }
