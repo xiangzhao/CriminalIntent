@@ -23,7 +23,7 @@ public class CrimeListActivity extends SingleFragmentActivity implements CrimeLi
     public void onCrimeSelected(Crime crime) {
         if (findViewById(R.id.detailFragmentContainer) == null) {
             Intent i = new Intent(this, CrimePagerActivity.class);
-            i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getDate());
+            i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
             startActivity(i);
         } else {
             FragmentManager fm = getSupportFragmentManager();
